@@ -1,0 +1,61 @@
+﻿@model UniManage.Models.Assignment
+@using Microsoft.AspNetCore.Http
+@using UniManage.Models
+@using System.Linq
+@using System.Collections.Generic
+
+@{
+    ViewData["Title"] = "Assignment Details";
+    var role = Context.Session.GetString("UserRole");
+    var mats = ViewBag.AssignmentMaterials as IEnumerable<AssignmentMaterial>;
+}
+
+<div class="container">
+    <div class="card shadow-sm mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">@Model.Title</h4>
+                <small class="text-muted">Deadline: @Model.Deadline.ToString("yyyy-MM-dd HH:mm")</small>
+            </div>
+            <div>
+                <a asp-action="Index" asp-controller="Assignment" class="btn btn-sm btn-outline-secondary">Back</a>
+                @if (role == "Student")
+                {
+                    <a asp-action="Submit" asp-route-id="@Model.AssignmentId" class="btn btn-sm btn-primary ms-2">Submit</a>
+                }
+                @if (role == "Lecturer")
+                {
+                    <a asp-action="GradeList" asp-controller="Assignment" class="btn btn-sm btn-outline-primary ms-2">Grade</a>
+                    <a asp-action="Edit" asp-controller="Assignment" asp-route-id="@Model.AssignmentId" class="btn btn-sm btn-outline-warning ms-2">Edit</a>
+                }
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p class="lead">@Model.Description</p>
+
+            <dl class="row">
+                <dt class="col-sm-3">Assignment ID</dt>
+                <dd class="col-sm-9">@Model.AssignmentId</dd>
+
+                <dt class="col-sm-3">Course ID</dt>
+                <dd class="col-sm-9">@Model.CourseId</dd>
+
+                <dt class="col-sm-3">Deadline</dt>
+                <dd class="col-sm-9">@Model.Deadline.ToString("F")</dd>
+            </dl>
+
+            @if (mats != null && mats.Any())
+            {
+                <hr />
+                <h5>Materials</h5>
+                <ul>
+                    @foreach (var m in mats)
+                    {
+                        <li><a href="@m.FilePath" target="_blank">@m.FileName</a></li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

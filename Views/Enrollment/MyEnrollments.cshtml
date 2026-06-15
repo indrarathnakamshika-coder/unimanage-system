@@ -1,0 +1,27 @@
+﻿@model IEnumerable<UniManage.Models.Course>
+
+<h2>My Enrolled Courses</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course Code</th>
+            <th>Course Name</th>
+            <th>Description</th>
+            <th>Credits</th>
+            <th>Department</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.CourseCode</td>
+                <td>@course.CourseName</td>
+                <td>@course.Description</td>
+                <td>@course.Credits</td>
+                <td>@course.Department</td>
+            </tr>
+        }
+    </tbody>
+</table>

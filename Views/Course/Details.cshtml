@@ -1,0 +1,52 @@
+@model UniManage.Models.Course
+
+@{
+    ViewData["Title"] = "Course Details";
+    var role = Context.Session.GetString("UserRole");
+}
+
+<div class="container">
+    <div class="card shadow-sm mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">@Model.CourseCode - @Model.CourseName</h4>
+                <small class="text-muted">@Model.Department - @Model.Credits credits</small>
+            </div>
+            <div>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Back</a>
+                @if (role == "Student")
+                {
+                    var isFull = ViewBag.IsFull as bool? ?? false;
+                    var isEnrolled = ViewBag.IsEnrolled as bool? ?? false;
+                    if (isFull)
+                    {
+                        <span class="badge bg-danger ms-2">Enrollment full — register for the next batch</span>
+                    }
+                    else if (isEnrolled)
+                    {
+                        <span class="badge bg-success ms-2">Enrolled</span>
+                    }
+                    else
+                    {
+                        <a asp-controller="Enrollment" asp-action="Enroll" asp-route-id="@Model.CourseId" class="btn btn-sm btn-primary ms-2">Enroll</a>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p>@Model.Description</p>
+
+            <dl class="row">
+                <dt class="col-sm-3">Lecturer</dt>
+                <dd class="col-sm-9">Not assigned</dd>
+
+                <dt class="col-sm-3">Capacity</dt>
+                <dd class="col-sm-9">@(Model.EnrollmentLimit > 0 ? Model.EnrollmentLimit.ToString() : "Unlimited")</dd>
+
+                <dt class="col-sm-3">Prerequisites</dt>
+                <dd class="col-sm-9">None</dd>
+            </dl>
+        </div>
+    </div>
+</div>

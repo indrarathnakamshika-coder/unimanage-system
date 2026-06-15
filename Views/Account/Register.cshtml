@@ -1,0 +1,164 @@
+﻿@model UniManage.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="auth-container">
+
+    <!-- LEFT -->
+    <div class="auth-left">
+        <div class="brand-circle">🎓</div>
+        <h1>Join Us!</h1>
+        <p>Create your UniManage account</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+        <h2>Register</h2>
+        <p>Create your account</p>
+
+        <form asp-action="Register" method="post">
+
+            <input asp-for="FullName" placeholder="Full Name" class="input-box" />
+            <input asp-for="Email" placeholder="Email" class="input-box" />
+            <input asp-for="Password" type="password" placeholder="Password" class="input-box" />
+
+            <select asp-for="Role" class="input-box">
+                <option value="">Select Role</option>
+                <option>Student</option>
+                <option>Lecturer</option>
+                <option>Admin</option>
+            </select>
+
+            <button type="submit" class="main-btn">REGISTER</button>
+        </form>
+
+        <div class="bottom-text">
+            Already have an account?
+            <a asp-action="Login">Sign in</a>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    body {
+        background: #0F172A;
+        color: #F8FAFC;
+    }
+
+    /* SAME STYLE AS LOGIN */
+    .auth-container {
+        width: 950px;
+        max-width: 100%;
+        min-height: 600px;
+        margin: 40px auto;
+        display: flex;
+        border-radius: 24px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .auth-left {
+        width: 45%;
+        background: linear-gradient(135deg, #0A1F44, #123A6F);
+        color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 40px;
+    }
+
+    .brand-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: white;
+        color: #6366F1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 28px;
+    }
+
+    .auth-right {
+        width: 55%;
+        padding: 60px;
+        text-align: center;
+        /* MORE VISIBLE CARD */
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+    }
+
+        .auth-right::before {
+            content: "";
+            position: absolute;
+            width: 40%;
+            height: 100%;
+            right: 0;
+            top: 0;
+            background: linear-gradient(180deg, rgba(29,78,216,0.15), transparent);
+            pointer-events: none;
+        }
+
+        .auth-right h2 {
+            color: #F8FAFC;
+        }
+
+        .auth-right p {
+            color: rgba(248,250,252,0.7);
+        }
+
+    .input-box {
+        width: 100%;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #FFFFFF;
+        padding: 14px 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        outline: none;
+    }
+        /* FIX FOR DROPDOWN TEXT */
+        .input-box option {
+            background: #0A1F44;
+            color: #FFFFFF;
+        }
+
+        .input-box::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+    .main-btn {
+        width: 100%;
+        background: #1D4ED8;
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .main-btn:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+
+    .bottom-text {
+        margin-top: 20px;
+        color: rgba(248,250,252,0.7);
+    }
+
+        .bottom-text a {
+            color: #6366F1;
+        }
+</style>

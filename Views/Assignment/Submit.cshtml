@@ -1,0 +1,31 @@
+﻿@{
+    var assignmentId = ViewBag.AssignmentId;
+    var existing = ViewBag.ExistingSubmission as bool? ?? false;
+    var submissionText = ViewBag.SubmissionText as string ?? string.Empty;
+    var submissionFile = ViewBag.SubmissionFilePath as string;
+}
+
+<h2>@(existing ? "Update Submission" : "Submit Assignment")</h2>
+
+<form asp-action="Submit" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="assignmentId" value="@assignmentId" />
+
+    <div class="mb-3">
+        <label>Write Answer</label>
+        <textarea name="submissionText" class="form-control">@submissionText</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Upload File</label>
+        @if (!string.IsNullOrEmpty(submissionFile))
+        {
+            <div class="mb-2">
+                <a href="@submissionFile" class="btn btn-sm btn-outline-secondary" download>Download current file</a>
+                <span class="text-muted ms-2">You can replace the file by choosing a new one below.</span>
+            </div>
+        }
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">@(existing ? "Update" : "Submit")</button>
+</form>

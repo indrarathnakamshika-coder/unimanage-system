@@ -1,0 +1,55 @@
+@model IEnumerable<UniManage.Models.ConversationSummary>
+
+@{
+    ViewData["Title"] = "Admin Conversations";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0">Conversations (Students - Lecturers)</h3>
+            <small class="text-muted">Recent student-lecturer conversations</small>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Lecturer</th>
+                            <th>Last Message</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No conversations found.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var c in Model)
+                            {
+                                <tr>
+                                    <td>@c.StudentName</td>
+                                    <td>@c.LecturerName</td>
+                                    <td>@c.LastMessageDate.ToString("g")<div class="text-muted small">@c.LastMessageSnippet?.Substring(0, Math.Min(80, (c.LastMessageSnippet ?? "").Length))</div></td>
+                                    <td class="text-end">
+                                        <a asp-action="Conversation" asp-route-studentId="@c.StudentId" asp-route-lecturerId="@c.LecturerId" class="btn btn-sm btn-outline-primary" title="View Conversation">
+                                            <i class="bi bi-chat-dots-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

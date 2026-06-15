@@ -1,0 +1,30 @@
+@model IEnumerable<dynamic>
+
+<h2>Manage Enrollments</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Course</th>
+            <th>Enrolled At</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.UserName</td>
+                <td>@e.CourseName</td>
+                <td>@e.EnrollmentDate.ToLocalTime().ToString("g")</td>
+                <td>
+                    <form asp-action="Remove" method="post" style="display:inline">
+                        <input type="hidden" name="enrollmentId" value="@e.EnrollmentId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,72 @@
+﻿@model UniManage.Models.Course
+@{
+    ViewData["Title"] = "Add Course";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm mt-5">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Add Course</h4>
+                    <small class="text-muted">Create a new course in the system</small>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="CourseCode" class="form-label">Course Code</label>
+                            <input asp-for="CourseCode" class="form-control" />
+                            <span asp-validation-for="CourseCode" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CourseName" class="form-label">Course Name</label>
+                            <input asp-for="CourseName" class="form-control" />
+                            <span asp-validation-for="CourseName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Credits" class="form-label">Credits</label>
+                                <input asp-for="Credits" class="form-control" />
+                                <span asp-validation-for="Credits" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Department" class="form-label">Department</label>
+                                <input asp-for="Department" class="form-control" />
+                                <span asp-validation-for="Department" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EnrollmentLimit" class="form-label">Enrollment Limit (0 = unlimited)</label>
+                                <input asp-for="EnrollmentLimit" class="form-control" />
+                                <span asp-validation-for="EnrollmentLimit" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        @* Lecturer assignment removed until DB schema updated *@
+
+                        @* Capacity and prerequisites removed until DB schema updated *@
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a asp-action="Index" asp-controller="Course" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Course</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

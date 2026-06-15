@@ -1,0 +1,213 @@
+﻿<h2>Lecturer Dashboard</h2>
+@model UniManage.Models.LecturerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Lecturer Dashboard";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <small class="text-muted">Courses, submissions and grading at a glance</small>
+        </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function(){
+            function palette(count){
+                const base = ['#0d6efd','#6610f2','#198754','#dc3545','#fd7e14','#20c997'];
+                return base.slice(0, Math.max(1,count));
+            }
+
+            // Submissions over time
+            fetch('@Url.Action("LecturerSubmissionsOverTime","Dashboard")')
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('submissionsOverTime').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: { labels: data.labels, datasets: [{ label: 'Submissions', data: data.data, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.08)', tension: 0.3, fill: true }] },
+                        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                    });
+                }).catch(()=>{});
+
+            // Grade status (graded vs ungraded)
+            fetch('@Url.Action("LecturerGradeStatus","Dashboard")')
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('gradeStatusChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: { labels: data.labels, datasets: [{ data: data.data, backgroundColor: palette(data.data.length) }] },
+                        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                    });
+                }).catch(()=>{});
+
+            // Submissions by assignment (bar)
+            fetch('@Url.Action("LecturerSubmissionsByAssignment","Dashboard")')
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('assignmentsBarChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: { labels: data.labels, datasets: [{ label: 'Submissions', data: data.counts, backgroundColor: palette(data.counts.length) }] },
+                        options: { responsive: true, indexAxis: 'y', scales: { x: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                    });
+                }).catch(()=>{});
+
+        })();
+    </script>
+}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Assigned Courses</h5>
+                    @if (Model.Courses == null || !Model.Courses.Any())
+                    {
+                        <div class="text-muted">No courses assigned.</div>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var c in Model.Courses)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">@c.CourseName</div>
+                                        <div class="text-muted small">@c.CourseCode — @c.Department</div>
+                                    </div>
+                                    <a asp-controller="Course" asp-action="Details" asp-route-id="@c.CourseId" class="btn btn-sm btn-outline-primary">View</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="mb-3">Your Assignments</h6>
+                    @if (Model.Assignments == null || !Model.Assignments.Any())
+                    {
+                        <div class="text-muted">No assignments available.</div>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var a in Model.Assignments.Take(6))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">@a.Title</div>
+                                        <div class="text-muted small">Due: @a.Deadline.ToString("g")</div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Index" asp-controller="Assignment" class="btn btn-sm btn-outline-secondary">View</a>
+                                        <a asp-action="GradeList" asp-controller="Assignment" class="btn btn-sm btn-primary">Grade</a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Recent Submissions</h5>
+                    @if (Model.RecentSubmissions == null || !Model.RecentSubmissions.Any())
+                    {
+                        <div class="text-muted">No recent submissions.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>Assignment</th>
+                                        <th>Submitted</th>
+                                        <th>Grade</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var s in Model.RecentSubmissions)
+                                    {
+                                        <tr>
+                                            <td>@s.StudentName</td>
+                                            <td>@s.CourseName</td>
+                                            <td>@s.AssignmentTitle</td>
+                                            <td>@s.SubmissionDate.ToString("g")</td>
+                                            <td>@(string.IsNullOrEmpty(s.Grade) ? "-" : s.Grade)</td>
+                                            <td class="text-end">
+                                                <a asp-controller="Assignment" asp-action="Grade" asp-route-id="@s.SubmissionId" class="btn btn-sm btn-outline-primary">Grade</a>
+                                                <a asp-controller="Assignment" asp-action="GradeList" class="btn btn-sm btn-outline-secondary">View All</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h5 class="mb-3">Grading Summary</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card border-0 p-2">
+                                <div class="card-body p-2">
+                                    <h6 class="mb-2">Submissions (last 6 months)</h6>
+                                    <canvas id="submissionsOverTime" style="max-height:220px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-0 p-2">
+                                <div class="card-body p-2">
+                                    <h6 class="mb-2">Grade Status</h6>
+                                    <canvas id="gradeStatusChart" style="max-height:220px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="mb-2">Top Assignments by Submissions</h6>
+                        <canvas id="assignmentsBarChart" style="max-height:220px;"></canvas>
+                    </div>
+                    @if (Model.GradingSummaries == null || !Model.GradingSummaries.Any())
+                    {
+                        <div class="text-muted">No grading data.</div>
+                    }
+                    else
+                    {
+                        <div class="row g-2">
+                            @foreach (var g in Model.GradingSummaries.Take(6))
+                            {
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="fw-semibold">@g.AssignmentTitle</div>
+                                        <div class="text-muted small">Total: @g.TotalSubmissions — Graded: @g.GradedCount — Pending: @g.UngradedCount</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

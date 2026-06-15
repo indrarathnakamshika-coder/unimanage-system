@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="auth-container">
+
+    <!-- LEFT PANEL -->
+    <div class="auth-left">
+        <div class="brand-circle">🔥</div>
+        <h1>Welcome Back!</h1>
+        <p>Login to access your UniManage dashboard</p>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="auth-right">
+
+        <h2>Login</h2>
+        <p>Sign in to continue</p>
+
+        <form asp-action="Login" method="post">
+
+            <input type="email" name="email" placeholder="Email" class="input-box" />
+
+            <input type="password" name="password" placeholder="Password" class="input-box" />
+
+            <div class="small-link">Forgot password?</div>
+
+            <button type="submit" class="main-btn">LOG IN</button>
+        </form>
+
+        <div class="bottom-text">
+            Don't have an account?
+            <a asp-action="Register">Sign up</a>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <p class="error">@ViewBag.Error</p>
+        }
+
+    </div>
+</div>
+
+<style>
+    body {
+        background: #0F172A;
+        color: #FFFFFF;
+    }
+
+    /* CONTAINER */
+    .auth-container {
+        width: 950px;
+        max-width: 100%;
+        min-height: 600px;
+        margin: 40px auto;
+        display: flex;
+        border-radius: 24px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* LEFT */
+    .auth-left {
+        width: 45%;
+        background: linear-gradient(135deg, #0A1F44, #123A6F);
+        color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 40px;
+    }
+
+    .brand-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: white;
+        color: #6366F1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 28px;
+    }
+
+    /* RIGHT */
+    .auth-right {
+        width: 55%;
+        padding: 60px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+    }
+
+        .auth-right::before {
+            content: "";
+            position: absolute;
+            width: 40%;
+            height: 100%;
+            right: 0;
+            top: 0;
+            background: linear-gradient(180deg, rgba(29,78,216,0.15), transparent);
+            pointer-events: none;
+        }
+
+        .auth-right h2 {
+            color: #FFFFFF;
+            font-size: 38px;
+        }
+
+        .auth-right p {
+            color: rgba(255,255,255,0.7);
+        }
+
+    /* INPUT */
+    .input-box {
+        width: 100%;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #FFFFFF;
+        padding: 14px 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        outline: none;
+    }
+
+        .input-box::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+    /* BUTTON */
+    .main-btn {
+        width: 100%;
+        background: #1D4ED8;
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .main-btn:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+
+    /* TEXT */
+    .bottom-text {
+        margin-top: 20px;
+        color: rgba(255,255,255,0.7);
+    }
+
+        .bottom-text a {
+            color: #60A5FA;
+            text-decoration: none;
+        }
+
+    .small-link {
+        font-size: 13px;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 20px;
+    }
+
+    .error {
+        color: #ff6b6b;
+        margin-top: 10px;
+    }
+</style>

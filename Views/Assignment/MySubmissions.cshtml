@@ -1,0 +1,101 @@
+﻿@model IEnumerable<UniManage.Models.Submission>
+
+@{
+    ViewData["Title"] = "My Submissions";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">My Submissions</h4>
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Assignment ID</th>
+                                <th>Submission</th>
+                                <th>Date</th>
+                                <th>Grade</th>
+                                <th>Feedback</th>
+                                <th>File</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.AssignmentId</td>
+
+                                    <td>
+                                        @(!string.IsNullOrEmpty(item.SubmissionText)
+                                            ? item.SubmissionText
+                                            : "No text")
+                                    </td>
+
+                                    <td>
+                                        @(item.SubmissionDate.ToString("yyyy-MM-dd"))
+                                    </td>
+
+                                    <td>
+                                        @if (item.Grade != null)
+                                        {
+                                            <span class="badge bg-success">@item.Grade</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Feedback))
+                                        {
+                                            <div class="text-truncate" style="max-width:200px;">@item.Feedback</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">No feedback</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.FilePath))
+                                        {
+                                            <a href="@item.FilePath"
+                                               class="btn btn-primary btn-sm"
+                                               download>
+                                                Download
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No file</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <h5>No submissions found</h5>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

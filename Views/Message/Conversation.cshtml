@@ -1,0 +1,115 @@
+@model IEnumerable<UniManage.Models.Message>
+
+@{
+    ViewData["Title"] = "Conversation";
+    // Support both admin-style (Student/Lecturer) and user-style (CurrentUser/OtherUser)
+    var studentName = ViewBag.StudentName as string;
+    var lecturerName = ViewBag.LecturerName as string;
+    var otherName = ViewBag.OtherUserName as string;
+    var currentUserId = ViewBag.CurrentUserId as int?;
+    var otherUserId = ViewBag.OtherUserId as int?;
+}
+
+<div class="p-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            @if (!string.IsNullOrEmpty(otherName) && currentUserId != null)
+            {
+                <h5 class="mb-0">Conversation with @otherName</h5>
+            }
+            else if (!string.IsNullOrEmpty(studentName) && !string.IsNullOrEmpty(lecturerName))
+            {
+                <h5 class="mb-0">Conversation: @studentName ? @lecturerName</h5>
+            }
+            else
+            {
+                <h5 class="mb-0">Conversation</h5>
+            }
+            <small class="text-muted">Full conversation history</small>
+        </div>
+        <div>
+            @if (!string.IsNullOrEmpty(otherName))
+            {
+                <a asp-action="Inbox" class="btn btn-sm btn-outline-secondary">Back</a>
+            }
+            else
+            {
+                <a asp-action="AdminInbox" class="btn btn-sm btn-outline-secondary">Back</a>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body px-3" style="height:60vh; overflow:auto;" id="chatContainer">
+            @if (!Model.Any())
+            {
+                <div class="text-center text-muted py-4">No messages exchanged yet.</div>
+            }
+            else
+            {
+                <!-- messages will be rendered by script for proper alignment -->
+            }
+        </div>
+
+        <div class="card-footer bg-white">
+            <form asp-action="Send" method="post" class="d-flex gap-2" id="replyForm">
+                <input type="hidden" name="ReceiverId" id="replyReceiverId" value="" />
+                <input type="hidden" name="Subject" value="Reply" />
+                <textarea name="Content" class="form-control form-control-sm" rows="2" placeholder="Write a reply..."></textarea>
+                <button type="submit" class="btn btn-primary btn-sm">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function(){
+            const msgs = [];
+            @foreach(var m in Model)
+            {
+                <text>msgs.push({ id: @m.MessageId, senderId: @m.SenderId, receiverId: @m.ReceiverId, content: `@Html.Raw(System.Net.WebUtility.HtmlEncode(m.Content).Replace("`","\\`"))`, date: `@m.SentDate.ToString("o")` });</text>
+            }
+
+            const chat = document.getElementById('chatContainer');
+            if(msgs.length === 0) return;
+
+            // Determine current user id and other id from ViewBag values injected into the page
+            const currentUserId = @((currentUserId != null) ? currentUserId.ToString() : "null");
+            const otherId = @((otherUserId != null) ? otherUserId.ToString() : "null");
+
+            chat.innerHTML = '';
+            msgs.forEach(m => {
+                const isFromCurrent = (currentUserId !== null && parseInt(currentUserId) === m.senderId);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'd-flex mb-3' + (isFromCurrent ? ' justify-content-end' : '');
+
+                const bubble = document.createElement('div');
+                bubble.style.maxWidth = '72%';
+                bubble.style.borderRadius = '12px';
+                bubble.style.padding = '12px';
+                bubble.style.background = isFromCurrent ? '#0d6efd' : '#f1f5f9';
+                bubble.style.color = isFromCurrent ? '#fff' : '#0f172a';
+                bubble.innerHTML = `<div>${m.content}</div><div class="text-muted small mt-2">${new Date(m.date).toLocaleString()}</div>`;
+
+                wrapper.appendChild(bubble);
+                chat.appendChild(wrapper);
+            });
+
+            // set reply receiver id if available
+            const replyReceiver = document.getElementById('replyReceiverId');
+            if(replyReceiver){
+                // if currentUserId and otherId available, reply receiver is otherId; otherwise, infer from first message
+                if(otherId !== null && otherId !== 'null') replyReceiver.value = otherId;
+                else {
+                    // pick the other participant
+                    const first = msgs[0];
+                    replyReceiver.value = (first.senderId === parseInt(currentUserId) ? first.receiverId : first.senderId);
+                }
+            }
+
+            // auto-scroll
+            chat.scrollTop = chat.scrollHeight;
+        })();
+    </script>
+}

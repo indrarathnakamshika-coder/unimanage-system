@@ -1,0 +1,101 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Theme variables for consistent navy / gray / white theme */
+:root {
+  --navy: #001f3f; /* primary navy */
+  --navy-dark: #071a2e;
+  --accent: #0d6efd; /* bootstrap primary fallback */
+  --muted-gray: #6c757d;
+  --bg-gray: #f6f8fa;
+  --card-bg: #ffffff;
+  --surface-border: #e9eef6;
+  --glass: rgba(255,255,255,0.06);
+}
+
+/* Global body / typography */
+body {
+  background: var(--bg-gray);
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Navbar theme (used by .navbar-custom) */
+.navbar-custom {
+  background-color: var(--navy) !important;
+}
+
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+  color: #ffffff !important;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #cfe9ff !important;
+}
+
+/* Footer */
+.footer {
+  background-color: #ffffff;
+  border-top: 1px solid var(--surface-border);
+  color: var(--muted-gray);
+}
+
+/* Cards and surfaces */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+}
+
+.hero-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--navy-dark);
+  border-color: var(--navy-dark);
+}
+
+/* Feature cards and small utilities */
+.feature-card { transition: transform .28s ease, box-shadow .28s ease; }
+.icon-box { background: #e8f0ff; color: var(--navy); }
+
+/* Utility - muted text */
+.text-muted { color: var(--muted-gray) !important; }
+
+/* Ensure consistent link colors */
+a { color: var(--navy); }
+a:hover { color: var(--navy-dark); }
+
+/* Small responsive tweak: keep hero spacing consistent */
+@media (max-width: 991px) {
+  .hero-card { margin-top: 18px; }
+}

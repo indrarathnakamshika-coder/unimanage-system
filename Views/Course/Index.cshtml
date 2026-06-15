@@ -1,0 +1,146 @@
+﻿@model IEnumerable<UniManage.Models.Course>
+@using Microsoft.AspNetCore.Http
+@using System.Linq
+
+@{
+    var role = Context.Session.GetString("UserRole");
+    var departments = Model?.Select(c => c.Department).Where(d => !string.IsNullOrEmpty(d)).Distinct().OrderBy(d => d).ToList() ?? new List<string>();
+}
+
+<div class="container">
+    <div class="row mb-4 mt-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-0">Courses</h3>
+                <small class="text-muted">Browse available courses</small>
+            </div>
+
+            @if (role == "Admin")
+            {
+                <a asp-action="Create" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus-lg me-1"></i> New Course
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6 mb-2">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                <input id="courseSearch" type="search" class="form-control" placeholder="Search by code, name or description" />
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <select id="deptFilter" class="form-select">
+                <option value="">All Departments</option>
+                @foreach (var d in departments)
+                {
+                    <option value="@d">@d</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="coursesTable" class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Course</th>
+                                    <th class="d-none d-md-table-cell">Description</th>
+                                    <th class="text-center">Credits</th>
+                                    <th>Department</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model == null || !Model.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No courses available.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr data-dept="@item.Department">
+                                            <td class="fw-semibold">@item.CourseCode</td>
+                                            <td>@item.CourseName</td>
+                                            <td class="d-none d-md-table-cell text-muted">@item.Description</td>
+                                            <td class="text-center">@item.Credits</td>
+                                            <td>@item.Department</td>
+                                            <td class="text-end">
+                                                @if (role == "Admin")
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-warning me-1" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                                    <a asp-action="Delete" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-danger me-1" title="Delete"><i class="bi bi-trash"></i></a>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="Materials" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-secondary me-1" title="View"><i class="bi bi-eye"></i></a>
+                                                }
+
+                                                @if (role == "Student")
+                                                {
+                                                    var full = (ViewBag.FullCourses as System.Collections.Generic.HashSet<int>) ?? new System.Collections.Generic.HashSet<int>();
+                                                    var enrolled = (ViewBag.EnrolledCourses as System.Collections.Generic.HashSet<int>) ?? new System.Collections.Generic.HashSet<int>();
+                                                    if (enrolled.Contains(item.CourseId))
+                                                    {
+                                                        <span class="badge bg-success">Enrolled</span>
+                                                    }
+                                                    else if (full.Contains(item.CourseId))
+                                                    {
+                                                        <span class="badge bg-danger">Enrollment full — register for the next batch</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a asp-controller="Enrollment" asp-action="Enroll" asp-route-id="@item.CourseId" class="btn btn-sm btn-primary">Enroll</a>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const search = document.getElementById('courseSearch');
+        const dept = document.getElementById('deptFilter');
+        const table = document.getElementById('coursesTable');
+
+        function filter() {
+            const q = (search.value || '').toLowerCase().trim();
+            const d = (dept.value || '').toLowerCase();
+            Array.from(table.tBodies[0].rows).forEach(row => {
+                const code = row.cells[0].innerText.toLowerCase();
+                const name = row.cells[1].innerText.toLowerCase();
+                const descCell = row.querySelector('td.d-none.d-md-table-cell');
+                const desc = descCell ? descCell.innerText.toLowerCase() : '';
+                const rdept = (row.getAttribute('data-dept') || '').toLowerCase();
+
+                const matchesQuery = !q || code.includes(q) || name.includes(q) || desc.includes(q);
+                const matchesDept = !d || rdept === d;
+
+                row.style.display = (matchesQuery && matchesDept) ? '' : 'none';
+            });
+        }
+
+        search && search.addEventListener('input', filter);
+        dept && dept.addEventListener('change', filter);
+    })();
+</script>

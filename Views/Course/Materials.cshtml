@@ -1,0 +1,93 @@
+@model IEnumerable<UniManage.Models.CourseMaterial>
+
+@{
+    var course = ViewBag.Course as UniManage.Models.Course;
+    ViewData["Title"] = $"Materials - {course?.CourseName}";
+}
+
+<div class="container">
+    @{ var role = Context.Session.GetString("UserRole"); }
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0">@((course != null) ? $"{course.CourseCode} — {course.CourseName}" : "Course Materials")</h3>
+            <small class="text-muted">Upload materials and manage assignments for this course</small>
+        </div>
+        <div class="d-flex gap-2">
+            @if (role == "Lecturer")
+            {
+                <a asp-controller="Assignment" asp-action="Create" asp-route-courseId="@course?.CourseId" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Assignment</a>
+            }
+            <a asp-controller="Course" asp-action="Index" class="btn btn-sm btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="row">
+    @using Microsoft.AspNetCore.Http
+    @if (role == "Lecturer")
+    {
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Upload Material</h5>
+                    <form asp-action="UploadMaterial" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="courseId" value="@course?.CourseId" />
+                        <div class="mb-3">
+                            <label class="form-label">File</label>
+                            <input type="file" name="file" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description (optional)</label>
+                            <textarea name="description" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Course Materials</h5>
+                    <div class="text-muted">Only lecturers can upload materials. You can view and download materials below.</div>
+                </div>
+            </div>
+        </div>
+    }
+
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Materials</h5>
+                    @if (!Model.Any())
+                    {
+                        <div class="text-muted">No materials uploaded yet.</div>
+                    }
+                    else
+                    {
+                        <ul class="list-group">
+                            @foreach (var m in Model)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">@m.FileName</div>
+                                        <div class="text-muted small">Uploaded: @m.UploadedAt.ToString("g")</div>
+                                        @if (!string.IsNullOrEmpty(m.Description)) { <div class="text-muted small">@m.Description</div> }
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="DownloadMaterial" asp-route-id="@m.CourseMaterialId" class="btn btn-sm btn-outline-primary">Download</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

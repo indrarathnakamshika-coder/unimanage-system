@@ -1,0 +1,87 @@
+﻿@model IEnumerable<UniManage.Models.Message>
+
+@{
+    ViewData["Title"] = "Messages";
+    var convs = ViewBag.Conversations as IEnumerable<UniManage.Models.ConversationListItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm" style="height:75vh; overflow:auto;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Conversations</h5>
+                        <a asp-action="Send" class="btn btn-sm btn-primary">New</a>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        @if (convs == null || !convs.Any())
+                        {
+                            <li class="list-group-item text-center text-muted">No conversations yet</li>
+                        }
+                        else
+                        {
+                            foreach (var c in convs)
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a asp-action="ConversationWith" asp-route-otherUserId="@c.OtherUserId" class="text-decoration-none flex-grow-1">
+                                            <div class="fw-semibold">@c.OtherUserName</div>
+                                            <div class="text-muted small text-truncate">@c.LastMessage</div>
+                                        </a>
+                                        <div class="text-end ms-2">
+                                            <div class="small text-muted">@c.LastDate.ToString("g")</div>
+                                            @if (c.UnreadCount > 0)
+                                            {
+                                                <span class="badge bg-danger">@c.UnreadCount</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm" style="height:75vh; display:flex; flex-direction:column;">
+                <div id="chatArea" class="card-body" style="overflow:auto; flex:1;">
+                    <div class="text-center text-muted">Select a conversation to view messages</div>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <form id="quickReply" method="post" asp-action="Send">
+                        <div class="d-flex gap-2">
+                            <input type="hidden" name="ReceiverId" id="quickReceiverId" value="" />
+                            <input type="text" name="Subject" class="form-control form-control-sm" placeholder="Subject" />
+                            <input type="text" name="Content" class="form-control form-control-sm" placeholder="Type your message..." />
+                            <button type="submit" class="btn btn-sm btn-primary">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // load conversation into right pane when clicking a conversation link
+        document.querySelectorAll('a[asp-action="ConversationWith"]').forEach(a=>{
+            a.addEventListener('click', function(e){
+                e.preventDefault();
+                const url = this.href;
+                fetch(url).then(r=>r.text()).then(html=>{
+                    document.getElementById('chatArea').innerHTML = html;
+                    // set receiver id for quick reply
+                    const matches = url.match(/otherUserId=(\d+)/);
+                    const rid = matches ? matches[1] : '';
+                    document.getElementById('quickReceiverId').value = rid;
+                });
+            });
+        });
+    })();
+</script>

@@ -1,0 +1,84 @@
+﻿@model UniManage.Models.Assignment
+
+@using UniManage.Models
+@{
+    ViewData["Title"] = "Create Assignment";
+    var routeVal = ViewContext.RouteData.Values["courseId"];
+    var qVal = Context.Request.Query["courseId"].ToString();
+    var courseId = routeVal ?? (string.IsNullOrEmpty(qVal) ? "" : qVal);
+    var courseName = ViewBag.CourseName as string;
+    var courses = ViewBag.Courses as System.Collections.Generic.List<Course>;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Create Assignment</h4>
+                    <small class="text-muted">Add deadline and optional attachments</small>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @if (!string.IsNullOrEmpty(courseName))
+                        {
+                            <input type="hidden" name="CourseId" value="@courseId" />
+                            <div class="mb-3">
+                                <label class="form-label">Course</label>
+                                <div class="form-control-plaintext fw-semibold">@courseName</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Select Course</label>
+                                <select name="CourseId" class="form-select" required>
+                                    <option value="">-- Select course --</option>
+                                    @if (courses != null)
+                                    {
+                                        foreach (var c in courses)
+                                        {
+                                            <option value="@c.CourseId">@c.CourseCode — @c.CourseName</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="CourseId" class="text-danger small"></span>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Deadline</label>
+                            <input asp-for="Deadline" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Deadline" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Attachment (optional)</label>
+                            <input type="file" name="attachment" class="form-control" />
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="history.back();">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Assignment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

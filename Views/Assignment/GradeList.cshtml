@@ -1,0 +1,104 @@
+﻿@model IEnumerable<UniManage.Models.Submission>
+
+@{
+    ViewData["Title"] = "Grade Submissions";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Student Submissions (Grading)</h4>
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered mb-0">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Assignment ID</th>
+                                <th>Student ID</th>
+                                <th>Submission</th>
+                                <th>Date</th>
+                                <th>Grade</th>
+                                <th>Feedback</th>
+                                <th>File</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.AssignmentId</td>
+                                    <td>@item.StudentId</td>
+
+                                    <td>
+                                        @(string.IsNullOrEmpty(item.SubmissionText)
+                                                                        ? "No text"
+                                                                        : item.SubmissionText)
+                            </td>
+
+                                    <td>
+                                        @item.SubmissionDate.ToString("yyyy-MM-dd")
+                                    </td>
+
+                                    <td>
+                                @if (item.Grade != null)
+                                        {
+                                            <span class="badge bg-success">@item.Grade</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Not graded</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Feedback))
+                                        {
+                                            <div class="text-truncate" style="max-width:200px;">@item.Feedback</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">-</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.FilePath))
+                                        {
+                                            <a href="@item.FilePath"
+                                               class="btn btn-success btn-sm"
+                                               download>
+                                                Download
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No file</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <h5>No submissions available</h5>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

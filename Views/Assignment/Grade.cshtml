@@ -1,0 +1,24 @@
+﻿@model UniManage.Models.Submission
+
+<h2>Grade Submission</h2>
+
+<form asp-action="Grade" method="post">
+    <input asp-for="SubmissionId" type="hidden" />
+
+    <div class="mb-3">
+        <label>Submission</label>
+        <textarea class="form-control" readonly>@Model.SubmissionText</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Grade</label>
+        <input asp-for="Grade" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Feedback (visible to student)</label>
+        <textarea asp-for="Feedback" class="form-control" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Grade</button>
+</form>
