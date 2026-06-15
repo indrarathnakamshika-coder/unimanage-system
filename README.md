@@ -145,7 +145,7 @@ Mobile application version
 Advanced analytics dashboard
 API integration for external systems
 
----s
+---
 
 📜 License
 
